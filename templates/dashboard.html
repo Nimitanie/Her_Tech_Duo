@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hero Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .dashboard-bg {
+            background: url("{{ url_for('static', filename='images/main-bg.jpeg') }}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Playfair Display', serif;
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .diamond-container { 
+            font-size: 20px; 
+            margin: 10px 0; 
+            color: #00d4ff; 
+            background: rgba(0,0,0,0.4);
+            padding: 5px 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        #boss-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #2c1a0a;
+            border: 4px solid #d4ac0d;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px gold;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .boss-img { width: 150px; height: 150px; margin-right: 25px; border: 3px solid gold; border-radius: 10px; }
+        
+        .stress-high { color: #ff4d4d; animation: shake 0.5s infinite; font-weight: bold; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+        
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #d4ac0d;
+            color: #000;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1001;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cinzel';
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        .quest-item.completed span { text-decoration: line-through; opacity: 0.6; }
+        
+        .hero-image {
+            width: 150px; 
+            height: 150px; 
+            border-radius: 50%; 
+            border: 3px solid gold;
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(212, 172, 13, 0.5);
+        }
+
+        .quest-button {
+            padding: 12px 25px;
+            font-family: 'Cinzel';
+            color: white;
+            border: 2px solid gold;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #3b2b1c;
+            transition: 0.3s;
+        }
+        .quest-button:hover { transform: scale(1.05); box-shadow: 0 0 15px gold; }
+    </style>
+</head>
+
+<body class="dashboard-bg" onload="initDashboard()">
+
+<div id="toast">Diamond is rewarded! 💎</div>
+
+<div id="boss-modal">
+    <div class="modal-content">
+        <img src="{{ url_for('static', filename='images/boss.png') }}" class="boss-img">
+        <div>
+            <h2 style="font-family: 'Cinzel'; color: #f9e79f; margin: 0;">CONGRATS!</h2>
+            <p id="level-up-msg" style="font-size: 18px;">You leveled up buddy! Welcome to level 1</p>
+            <button onclick="closeModal()" style="background: gold; padding: 10px 20px; border: none; font-family: 'Cinzel'; font-weight: bold; cursor: pointer;">Proceed Hero</button>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-wrapper" style="max-width: 850px; margin: auto; padding-top: 40px;">
+    <h1 class="dashboard-title" style="font-family: 'Cinzel'; text-align: center; font-size: 50px; text-shadow: 0 0 15px gold;">Hero Dashboard</h1>
+
+    <div class="hero-card" style="display: flex; align-items: center; background: rgba(0,0,0,0.7); padding: 30px; border-radius: 20px; border: 2px solid #d4ac0d;">
+        <div class="hero-info-panel" style="display: flex; align-items: center; gap: 25px;">
+            <img src="{{ url_for('static', filename='images/hero.png') }}" class="hero-image">
+            <div class="level-panel">
+                <div class="level-text" id="display-level" style="font-family: 'Cinzel'; font-size: 32px; color: gold;">Level 0</div>
+                <div class="diamond-container" id="diamond-display">💎 </div>
+                <div class="xp-text" id="display-xp" style="font-size: 18px; color: #ccc;">XP: 0</div>
+            </div>
+        </div>
+
+        <div class="energy-panel" style="margin-left: auto; text-align: center; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 30px;">
+            <div class="meter-label" style="font-family: 'Cinzel'; color: gold;">Stress Level</div>
+            <div id="stress-value" style="font-size: 45px; font-weight: bold;">0%</div>
+            <div id="burnout-note" style="font-size: 12px; color: #ff4d4d;"></div>
+        </div>
+    </div>
+
+    <div class="quest-panel" id="quest-list" style="margin-top: 30px; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; border: 1px solid #5d4037;">
+        </div>
+
+    <div class="quest-button-box" style="display: flex; justify-content: center; gap: 15px; margin-top: 30px;">
+        <button class="quest-button" onclick="location.href='/input'">New Quest</button>
+        <button class="quest-button" onclick="location.href='/simulation'" style="background: #2e7d32;">Simulation</button>
+        <button class="quest-button" onclick="location.href='/'" style="background: #5d4037;">Exit to Front</button>
+    </div>
+</div>
+
+<script>
+    // Logic remains local, but URLs in HTML are Flask-specific
+    let xp = parseInt(localStorage.getItem("realityRPG_xp")) || 0;
+
+    function initDashboard() {
+        renderQuests();
+        updateLevelDisplay();
+        calculateStress();
+    }
+
+    function renderQuests() {
+        const quests = JSON.parse(localStorage.getItem("realityRPG_quests")) || [];
+        const container = document.getElementById("quest-list");
+        container.innerHTML = `<h3 style="font-family: 'Cinzel'; margin-top:0; color:gold;">Active Missions</h3>`;
+
+        if(quests.length === 0) {
+            container.innerHTML += `<p style="font-style:italic; opacity:0.5;">No active quests in the log...</p>`;
+            return;
+        }
+
+        quests.forEach((q, index) => {
+            const div = document.createElement("div");
+            div.className = `quest-item ${q.completed ? 'completed' : ''}`;
+            div.style = "background: rgba(255,255,255,0.05); border: 1px solid rgba(212,172,13,0.2); margin: 10px 0; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items:center;";
+            
+            div.innerHTML = `
+                <div style="display:flex; flex-direction:column;">
+                    <span style="font-size:18px; font-weight:bold;">⚔ ${q.name}</span>
+                    <small style="color:gold;">Priority: ${q.priority} | Due: ${q.deadline}</small>
+                </div>
+                ${!q.completed ? `<button onclick="completeTask(${index})" style="background:gold; border:none; border-radius:50%; width:35px; height:35px; cursor:pointer; font-weight:bold;">✓</button>` : '<span style="color:#2ecc71; font-weight:bold;">COMPLETED</span>'}
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function completeTask(index) {
+        let quests = JSON.parse(localStorage.getItem("realityRPG_quests"));
+        quests[index].completed = true;
+        localStorage.setItem("realityRPG_quests", JSON.stringify(quests));
+        
+        addXP(20); // Awarding 20 XP per task
+        showToast("Diamond earned! 💎");
+        renderQuests();
+        calculateStress();
+    }
+
+    function addXP(amount) {
+        let oldLevel = calculateLevel(xp);
+        xp += amount;
+        localStorage.setItem("realityRPG_xp", xp);
+        
+        let newLevel = calculateLevel(xp);
+        if (newLevel > oldLevel) {
+            showLevelUp(newLevel);
+        }
+        updateLevelDisplay();
+    }
+
+    function calculateLevel(currentXp) {
+        if (currentXp < 100) return 0;
+        if (currentXp < 500) return 1;
+        if (currentXp < 1000) return 2;
+        return 2 + Math.floor((currentXp - 1000) / 1000);
+    }
+
+    function updateLevelDisplay() {
+        document.getElementById("display-xp").innerText = `XP: ${xp}`;
+        document.getElementById("display-level").innerText = `Level ${calculateLevel(xp)}`;
+        
+        // RPG Style Inventory: 1 diamond per 20 XP
+        const diamondCount = Math.floor(xp / 20);
+        document.getElementById("diamond-display").innerText = "💎 " + diamondCount;
+    }
+
+    function showLevelUp(newLevel) {
+        document.getElementById("level-up-msg").innerText = `You leveled up buddy! Welcome to level ${newLevel}`;
+        document.getElementById("boss-modal").style.display = "flex";
+    }
+
+    function closeModal() { document.getElementById("boss-modal").style.display = "none"; }
+
+    function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.classList.add("show");
+        setTimeout(() => { t.classList.remove("show"); }, 3000);
+    }
+
+    function calculateStress() {
+        const quests = JSON.parse(localStorage.getItem("realityRPG_quests")) || [];
+        const pending = quests.filter(q => !q.completed).length;
+        const stress = Math.min(pending * 20, 100);
+        const val = document.getElementById("stress-value");
+        const note = document.getElementById("burnout-note");
+        
+        val.innerText = stress + "%";
+        
+        if (stress > 60) {
+            val.className = "stress-high";
+            note.innerText = "WARNING: BURNOUT RISK";
+        } else {
+            val.className = "";
+            note.innerText = "";
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+/* ================================= */
+/* GLOBAL SETTINGS */
+/* ================================= */
+:root {
+    --xp-width: 0%;
+    --stress-progress: 0%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* ================================= */
+/* DASHBOARD & SIMULATION BACKGROUND */
+/* ================================= */
+.dashboard-bg, .simulation-bg {
+    background-image: url("images/main-bg.jpeg"); /* Using consistent background */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Cinzel', serif;
+}
+
+/* ================================= */
+/* WRAPPER & TITLE */
+/* ================================= */
+.dashboard-wrapper {
+    width: 90%;
+    max-width: 820px;
+    margin: auto;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.dashboard-title {
+    text-align: center;
+    color: white;
+    font-size: 42px;
+    text-shadow: 0 0 10px gold, 0 0 20px black;
+    margin-bottom: 30px;
+}
+
+/* ================================= */
+/* HERO CARD & INFO PANEL */
+/* ================================= */
+.hero-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, #3b2b1c, #1a1208);
+    border: 3px solid gold;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.7);
+}
+
+.hero-info-panel {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to bottom, #2a1c0f, #120b05);
+    border: 2px solid gold;
+    padding: 15px;
+    border-radius: 10px;
+    flex: 1;
+    margin-right: 15px;
+}
+
+.hero-image {
+    width: 120px; /* Adjusted size for better fit */
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-right: 20px;
+    box-shadow: 0 0 15px gold;
+    transition: 0.4s;
+}
+
+.hero-image:hover { transform: scale(1.1); }
+
+/* ================================= */
+/* XP SYSTEM */
+/* ================================= */
+.level-text {
+    font-size: 26px;
+    color: white;
+    text-shadow: 0 0 10px gold;
+}
+
+.xp-bar {
+    width: 100%;
+    max-width: 260px;
+    height: 20px;
+    background: black;
+    border: 2px solid gold;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.xp-fill {
+    height: 100%;
+    width: var(--xp-width); /* Controlled by JS */
+    background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+    box-shadow: 0 0 20px gold;
+    transition: width 0.8s ease-in-out;
+}
+
+/* ================================= */
+/* STRESS METER (CONIC GRADIENT) */
+/* ================================= */
+.energy-panel {
+    background: linear-gradient(to bottom, #2a1c0f, #120b05);
+    border: 2px solid gold;
+    padding: 15px;
+    border-radius: 10px;
+    width: 180px;
+    text-align: center;
+}
+
+.meter-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid gold;
+    margin: auto;
+    /* This dynamic gradient creates the "loading" effect for stress */
+    background: conic-gradient(
+        #ff4d4d var(--stress-progress), 
+        #222 var(--stress-progress)
+    );
+}
+
+.meter-inner {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* ================================= */
+/* QUESTS & BUTTONS */
+/* ================================= */
+.quest-panel {
+    background: linear-gradient(to bottom, #f5deb3, #e2c089);
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #8b5a2b;
+    color: #2b1a0a;
+}
+
+.quest-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid rgba(139, 90, 43, 0.3);
+}
+
+.quest-complete {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(#2ecc71, #27ae60);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,255,0,0.3);
+}
+
+.quest-button-box {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.quest-button {
+    padding: 12px 25px;
+    font-family: 'Cinzel';
+    background: linear-gradient(to bottom, #3a6ea5, #1d3f66);
+    color: white;
+    border: 2px solid gold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.quest-button:hover { transform: translateY(-3px); box-shadow: 0 0 15px gold; }
