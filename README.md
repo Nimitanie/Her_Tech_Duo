@@ -115,4 +115,3 @@ media/Reality_RPG.mp4
 
 ---
 
-**Would you like me to help you write the "Contributing" or "License" section to make this look like a professional open-source repository?**
