@@ -111,9 +111,7 @@ Open `http://127.0.0.1:5000` in your browser.
 
 ## 📽️ Video Demonstration
 
-*(Note: Upload your video to the repository or host it on YouTube/Vimeo and link it below)*
-
-[Click here to watch the RealityRPG Walkthrough](https://www.google.com/search?q=LINK_TO_YOUR_VIDEO)
+media/Reality_RPG.mp4
 
 ---
 
